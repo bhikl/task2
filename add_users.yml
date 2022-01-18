@@ -1,0 +1,23 @@
+---
+- name: Add Users
+  hosts: all
+  become: yes
+  
+  vars:
+     source_file: ./index.html
+     dest_file  : /var/www/html
+
+  tasks:
+  - name: Add Password File
+    include_vars:
+      file: passwords.yml
+  - name: Add Users
+    user:
+      name: "{{ item }}"
+      comment: "{{ item }}@example.com"
+      create_home: yes
+      password: "{{ lookup('vars', item + '_pass') | password_hash('sha512')}}"
+    loop: 
+      - "Alice"
+      - "Bob"
+      - "Carol"  
